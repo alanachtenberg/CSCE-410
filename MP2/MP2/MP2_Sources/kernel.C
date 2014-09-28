@@ -55,9 +55,9 @@
 /*--------------------------------------------------------------------------*/
 
 int main() {
-
     GDT::init();
     Console::init();
+    Console::puts("Console initiated\n");
     IDT::init();
     ExceptionHandler::init_dispatcher();
     IRQ::init();
@@ -100,7 +100,7 @@ int main() {
     } pagefault_handler;
 
     ExceptionHandler::register_handler(14, &pagefault_handler);
-    
+
     /* ---- INITIALIZE THE PAGE TABLE -- */
 
     PageTable::init_paging(&kernel_mem_pool,
@@ -114,8 +114,8 @@ int main() {
     PageTable::enable_paging();
 
     /* -- INITIALIZE THE TIMER (we use a very simple timer).-- */
-    
-    SimpleTimer timer(100); /* timer ticks every 10ms. */
+
+    SimpleTimer timer(100); //fixed timer to correct hz /* timer ticks every 10ms. */
     InterruptHandler::register_handler(0, &timer);
 
     /* NOTE: The timer chip starts periodically firing as

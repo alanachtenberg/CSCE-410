@@ -1,10 +1,10 @@
-CPP = gpp
-CPP_OPTIONS = -nostartfiles -nostdlib -fno-rtti -fno-exceptions  
+CPP = gcc
+CPP_OPTIONS = -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector -fleading-underscore -m32 -fno-asynchronous-unwind-tables
 
 all: kernel.bin
 
 clean:
-	del *.o
+	rm -f *.o kernel.bin
 
 start.o: start.asm gdt_low.asm idt_low.asm irq_low.asm
 	nasm -f aout -o start.o start.asm
@@ -14,6 +14,7 @@ utils.o: utils.C utils.H
 
 assert.o: assert.C assert.H
 	$(CPP) $(CPP_OPTIONS) -c -o assert.o assert.C
+
 
 # ==== VARIOUS LOW-LEVEL STUFF =====
 
@@ -70,8 +71,6 @@ kernel.o: kernel.C console.H simple_timer.H page_table.H
 
 kernel.bin: start.o utils.o kernel.o assert.o console.o gdt.o idt.o irq.o exceptions.o interrupts.o \
    simple_timer.o paging_low.o page_table.o frame_pool.o machine.o machine_low.o
-	ld -T linker.ld -o kernel.bin start.o utils.o kernel.o assert.o console.o gdt.o idt.o \
+	ld -melf_i386 -T linker.ld -o kernel.bin start.o utils.o kernel.o assert.o console.o gdt.o idt.o \
    exceptions.o irq.o interrupts.o simple_timer.o  paging_low.o page_table.o \
    frame_pool.o machine.o machine_low.o
-	
-	

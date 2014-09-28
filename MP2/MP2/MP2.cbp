@@ -19,6 +19,65 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="MP2_Sources/assert.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/assert.H" />
+		<Unit filename="MP2_Sources/console.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/console.H" />
+		<Unit filename="MP2_Sources/exceptions.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/exceptions.H" />
+		<Unit filename="MP2_Sources/frame_pool.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/frame_pool.H" />
+		<Unit filename="MP2_Sources/gdt.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/gdt.H" />
+		<Unit filename="MP2_Sources/gdt_low.asm" />
+		<Unit filename="MP2_Sources/idt.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/idt.H" />
+		<Unit filename="MP2_Sources/idt_low.asm" />
+		<Unit filename="MP2_Sources/interrupts.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/interrupts.H" />
+		<Unit filename="MP2_Sources/irq.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/irq.H" />
+		<Unit filename="MP2_Sources/irq_low.asm" />
+		<Unit filename="MP2_Sources/kernel.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/machine.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/machine.H" />
+		<Unit filename="MP2_Sources/machine_low.H" />
+		<Unit filename="MP2_Sources/machine_low.asm" />
+		<Unit filename="MP2_Sources/page_table.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/page_table.H" />
+		<Unit filename="MP2_Sources/paging_low.H" />
+		<Unit filename="MP2_Sources/paging_low.asm" />
+		<Unit filename="MP2_Sources/simple_timer.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/simple_timer.H" />
+		<Unit filename="MP2_Sources/start.asm" />
+		<Unit filename="MP2_Sources/utils.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="MP2_Sources/utils.H" />
 		<Extensions>
 			<code_completion />
 			<debugger />

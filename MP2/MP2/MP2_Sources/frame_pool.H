@@ -18,14 +18,13 @@
 /* DEFINES */
 /*--------------------------------------------------------------------------*/
 
-/* -- (none) -- */
+#define FRAME_SIZE 4096 //frame size is 4 kB
 
 /*--------------------------------------------------------------------------*/
 /* INCLUDES */
 /*--------------------------------------------------------------------------*/
 
-/* -- (none) -- */
-
+#include "utils.H"
 /*--------------------------------------------------------------------------*/
 /* DATA STRUCTURES */
 /*--------------------------------------------------------------------------*/
@@ -40,9 +39,13 @@ class FramePool {
 
 private:
      /* -- DEFINE YOUR FRAME POOL DATA STRUCTURE(s) HERE. */
-     
+     unsigned long base_frame_no; // start frame of pool
+     unsigned long nframes; // number of frames under management
+     unsigned long info_frame_no; // if 0 can choose any frame from pool
+     unsigned char* freeframe_map; //keeps track of wether frame is available
+     unsigned char* inaccessible_map;
 public:
-  
+
    FramePool(unsigned long _base_frame_no,
              unsigned long _nframes,
              unsigned long _info_frame_no);
@@ -73,7 +76,7 @@ public:
 
    static void release_frame(unsigned long _frame_no);
    /* Releases frame back to the given frame pool.
-      The frame is identified by the frame number. 
+      The frame is identified by the frame number.
       NOTE: This function is static because there may be more than one frame pool
       defined in the system, and it is unclear which one this frame belongs to.
       This function must first identify the correct frame pool and then call the frame
