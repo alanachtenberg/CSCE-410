@@ -43,7 +43,10 @@ private:
      unsigned long nframes; // number of frames under management
      unsigned long info_frame_no; // if 0 can choose any frame from pool
      unsigned char* freeframe_map; //keeps track of wether frame is available
-     unsigned char* inaccessible_map;
+     unsigned char* inaccessible_map;//keeps track of inaccessible frames
+
+     static FramePool* pool_list; //static pointer to store start of list
+     FramePool* prev; // singly linked list, list is used to implement static release frame method
 public:
 
    FramePool(unsigned long _base_frame_no,

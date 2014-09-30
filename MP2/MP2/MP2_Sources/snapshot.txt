@@ -1,25 +1,25 @@
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
-One second has passed
+
+    GRUB  version 0.5.96.1  (639K lower / 31680K upper memory)
+
+ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+ ³ My Kernel                                                              ß³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ³                                                                         ³
+ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+      Use the  and  keys to select which entry is highlighted.
+      Press enter to boot the selected OS, 'e' to edit the
+      commands before booting, or 'c' for a command-line.
+
+
+
+
 
