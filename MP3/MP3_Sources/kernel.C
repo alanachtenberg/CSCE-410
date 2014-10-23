@@ -129,6 +129,17 @@ int main() {
 
     ExceptionHandler::register_handler(0, &dbz_handler);
 
+    /* ---- INSTALL PAGE FAULT HANDLER -- */
+
+    class PageFault_Handler : public ExceptionHandler {
+      public:
+      virtual void handle_exception(REGS * _regs) {
+        PageTable::handle_fault(_regs);
+      }
+    } pagefault_handler;
+
+    ExceptionHandler::register_handler(14, &pagefault_handler);
+
     /* -- INITIALIZE FRAME POOLS -- */
 
     FramePool kernel_mem_pool(KERNEL_POOL_START_FRAME,
@@ -149,27 +160,16 @@ int main() {
     PageTable pt1;
 
     pt1.load();
-
     PageTable::enable_paging();
 
     /* -- INITIALIZE THE TWO VIRTUAL MEMORY PAGE POOLS -- */
-
     VMPool code_pool(512 MB, 256 MB, &process_mem_pool, &pt1);
     VMPool heap_pool(1 GB, 256 MB, &process_mem_pool, &pt1);
-    
-    /* ---- INSTALL PAGE FAULT HANDLER -- */
 
-    class PageFault_Handler : public ExceptionHandler {
-      public:
-      virtual void handle_exception(REGS * _regs) {
-        PageTable::handle_fault(_regs);
-      }
-    } pagefault_handler;
 
-    ExceptionHandler::register_handler(14, &pagefault_handler);
 
     /* -- INITIALIZE THE TIMER (we use a very simple timer).-- */
-    
+
     SimpleTimer timer(100); /* timer ticks every 10ms. */
     InterruptHandler::register_handler(0, &timer);
 
@@ -185,7 +185,6 @@ int main() {
     /* -- MOST OF WHAT WE NEED IS SETUP. THE KERNEL CAN START. */
 
     Console::puts("Hello World!\n");
-
     /* -- GENERATE MEMORY REFERENCES */
 
     Console::puts("I am starting with an extensive test of the memory allocator.\n");
@@ -204,6 +203,7 @@ void GenerateMemoryReferences(VMPool *pool, int size1, int size2)
    for(int i=1; i<size1; i++) {
       int *arr = new int[size2 * i];
       if(pool->is_legitimate((unsigned long)arr) == FALSE) {
+        Console::puts("is_legitimate test failed\n");
          TestFailed();
       }
       for(int j=0; j<size2*i; j++) {

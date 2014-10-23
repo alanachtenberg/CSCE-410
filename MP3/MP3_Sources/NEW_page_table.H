@@ -1,7 +1,7 @@
 /*
     File: page_table.H
 
-    Author: R. Bettati
+    Author: R. Bettati, Nikhil Gupta
             Department of Computer Science
             Texas A&M University
     Date  : 10/03/25
@@ -17,19 +17,21 @@
 /* DEFINES */
 /*--------------------------------------------------------------------------*/
 
-#define VM_ARRAY_SIZE 10
+/* -- (none) -- */
 
 /*--------------------------------------------------------------------------*/
 /* INCLUDES */
 /*--------------------------------------------------------------------------*/
-#include "paging_low.H"
+
 #include "exceptions.H"
 #include "frame_pool.H"
-#include "console.H"
 #include "vm_pool.H"
+
 /*--------------------------------------------------------------------------*/
 /* FORWARDS */
 /*--------------------------------------------------------------------------*/
+
+/* -- (none) -- */
 
 /*--------------------------------------------------------------------------*/
 /* P A G E - T A B L E  */
@@ -48,7 +50,6 @@ private:
 
   /* DATA FOR CURRENT PAGE TABLE */
   unsigned long        * page_directory;     /* where is page directory located? */
-  VMPool               * vmpool_array[VM_ARRAY_SIZE];  /*array of vmpool pointers*/
 
 public:
   static const unsigned int PAGE_SIZE        = Machine::PAGE_SIZE; /* in bytes */
@@ -87,6 +88,7 @@ public:
   void register_vmpool(VMPool *_pool);
   /* The page table needs to know about where it gets its pages from.
      For this, we have VMPools register with the page table. */
+
 };
 
 #endif
