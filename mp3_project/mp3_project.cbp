@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="mp3_project" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option virtualFolders="MP3/MP3_Sources/;" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/mp3_project" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/mp3_project" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../MP3/MP3_Sources/NEW_page_table.H" />
+		<Unit filename="../MP3/MP3_Sources/assert.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/assert.H" />
+		<Unit filename="../MP3/MP3_Sources/console.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/console.H" />
+		<Unit filename="../MP3/MP3_Sources/exceptions.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/exceptions.H" />
+		<Unit filename="../MP3/MP3_Sources/frame_pool.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/frame_pool.H" />
+		<Unit filename="../MP3/MP3_Sources/gdt.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/gdt.H" />
+		<Unit filename="../MP3/MP3_Sources/gdt_low.asm" />
+		<Unit filename="../MP3/MP3_Sources/idt.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/idt.H" />
+		<Unit filename="../MP3/MP3_Sources/idt_low.asm" />
+		<Unit filename="../MP3/MP3_Sources/interrupts.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/interrupts.H" />
+		<Unit filename="../MP3/MP3_Sources/irq.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/irq.H" />
+		<Unit filename="../MP3/MP3_Sources/irq_low.asm" />
+		<Unit filename="../MP3/MP3_Sources/kernel.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/machine.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/machine.H" />
+		<Unit filename="../MP3/MP3_Sources/machine_low.H" />
+		<Unit filename="../MP3/MP3_Sources/machine_low.asm" />
+		<Unit filename="../MP3/MP3_Sources/page_table.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/page_table.H" />
+		<Unit filename="../MP3/MP3_Sources/paging_low.H" />
+		<Unit filename="../MP3/MP3_Sources/paging_low.asm" />
+		<Unit filename="../MP3/MP3_Sources/simple_timer.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/simple_timer.H" />
+		<Unit filename="../MP3/MP3_Sources/start.asm" />
+		<Unit filename="../MP3/MP3_Sources/utils.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/utils.H" />
+		<Unit filename="../MP3/MP3_Sources/vm_pool.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP3/MP3_Sources/vm_pool.H" />
+		<Unit filename="vm_pool.C">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="MP3/MP3_Sources/" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
