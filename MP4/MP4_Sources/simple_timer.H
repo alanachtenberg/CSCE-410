@@ -1,4 +1,4 @@
-/* 
+/*
     File: simple_timer.H
 
     Author: R. Bettati
@@ -7,7 +7,7 @@
     Date  : 09/03/19
 
     This is a simple example of a hardware interrupt handler.
-    As an example, this implements a timer, which in turn 
+    As an example, this implements a timer, which in turn
     triggers a function to be called at the given frequency.
     The function is implemented in 'handle_interrupt'.
 
@@ -27,17 +27,20 @@
 /*--------------------------------------------------------------------------*/
 
 #include "interrupts.H"
+#include "scheduler.H"
 
 /*--------------------------------------------------------------------------*/
 /* S I M P L E   T I M E R  */
 /*--------------------------------------------------------------------------*/
+
+extern Scheduler* SYSTEM_SCHEDULER;
 
 class SimpleTimer : public InterruptHandler {
 
 private:
 
   /* How long has the system been running? */
-  unsigned long seconds; 
+  unsigned long seconds;
   int           ticks;   /* ticks since last "seconds" update.    */
 
   /* At what frequency do we update the ticks counter? */
@@ -54,15 +57,15 @@ public :
   /* Initialize the simple timer, and set its frequency. */
 
   virtual void handle_interrupt(REGS *_r);
-  /* This must be installed as the interrupt handler for the timer 
-     when the system gets initialized. (e.g. in "kernel.C")  
+  /* This must be installed as the interrupt handler for the timer
+     when the system gets initialized. (e.g. in "kernel.C")
   */
 
   void current(unsigned long * _seconds, int * _ticks);
   /* Return the current "time" since the system started. */
 
   void wait(unsigned long _seconds);
-  /* Wait for a particular time to be passed. The implementation is based 
+  /* Wait for a particular time to be passed. The implementation is based
      on busy looping! */
 
 };

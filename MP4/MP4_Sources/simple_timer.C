@@ -57,11 +57,12 @@ void SimpleTimer::handle_interrupt(REGS *_r) {
     ticks++;
 
     /* Whenever a second is over, we update counter accordingly. */
-    if (ticks >= hz )
+    if (ticks >= hz/20)//ticks == hz gives T=1s hz/20 gives t = 50 ms
     {
-        seconds++;
         ticks = 0;
-        Console::puts("One second has passed\n");
+        Console::puts("\nROUND ROBIN SWITCH\n");
+        SYSTEM_SCHEDULER->resume(Thread::CurrentThread());//put current thread on end of queue
+        SYSTEM_SCHEDULER->yield();// start next thread
     }
 }
 

@@ -142,7 +142,10 @@ void InterruptHandler::dispatch_interrupt(REGS * _r) {
 
      /* Send an EOI message to the master interrupt controller. */
     outportb(0x20, 0x20);
-
+    // we send interupt has been handled before calling handle interupt to prevent the interupt from not being acknoledged
+    //when a context switch occurs inside of the handler
+    // and when the calling thread finally returns from the context switch to not send the interupt handled message
+    //because at this point it has already been handled and if the PIC is waiting for a handled message it is a different interupt
     handler->handle_interrupt(_r);
 
     //dont do anything after handler to prevent interupts not being handled

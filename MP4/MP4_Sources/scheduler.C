@@ -12,14 +12,11 @@
       end_of_quantum handler is installed here as well. */
 
     void Scheduler::yield(){
-        //BONUS number 1
-        Machine::disable_interrupts();//disable interupts while selecting next thread to dispatch
         if (queue_size!=0){
             --queue_size;
             Thread* next= ready_queue.dequeue(); //get next queue waiting
             Thread::dispatch_to(next);// run new thread
         }
-        Machine::enable_interrupts();
         //if queue is empty we simply return via the call stack
    }
    /* Called by the currently running thread in order to give up the CPU.
