@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="mp4_project" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/mp4_project" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/mp4_project" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../MP4/MP4_Sources/assert.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/assert.H" />
+		<Unit filename="../MP4/MP4_Sources/console.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/console.H" />
+		<Unit filename="../MP4/MP4_Sources/exceptions.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/exceptions.H" />
+		<Unit filename="../MP4/MP4_Sources/frame_pool.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/frame_pool.H" />
+		<Unit filename="../MP4/MP4_Sources/gdt.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/gdt.H" />
+		<Unit filename="../MP4/MP4_Sources/gdt_low.asm" />
+		<Unit filename="../MP4/MP4_Sources/idt.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/idt.H" />
+		<Unit filename="../MP4/MP4_Sources/idt_low.asm" />
+		<Unit filename="../MP4/MP4_Sources/interrupts.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/interrupts.H" />
+		<Unit filename="../MP4/MP4_Sources/irq.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/irq.H" />
+		<Unit filename="../MP4/MP4_Sources/irq_low.asm" />
+		<Unit filename="../MP4/MP4_Sources/kernel.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/machine.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/machine.H" />
+		<Unit filename="../MP4/MP4_Sources/machine_low.H" />
+		<Unit filename="../MP4/MP4_Sources/machine_low.asm" />
+		<Unit filename="../MP4/MP4_Sources/mem_pool.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/mem_pool.H" />
+		<Unit filename="../MP4/MP4_Sources/scheduler.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/scheduler.H" />
+		<Unit filename="../MP4/MP4_Sources/simple_timer.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/simple_timer.H" />
+		<Unit filename="../MP4/MP4_Sources/start.asm" />
+		<Unit filename="../MP4/MP4_Sources/thread.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/thread.H" />
+		<Unit filename="../MP4/MP4_Sources/threads_low.H" />
+		<Unit filename="../MP4/MP4_Sources/threads_low.asm" />
+		<Unit filename="../MP4/MP4_Sources/utils.C">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../MP4/MP4_Sources/utils.H" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
