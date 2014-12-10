@@ -1,14 +1,10 @@
-CPP = gpp
-CPP_OPTIONS = -nostartfiles -nostdlib -fno-rtti -fno-exceptions  
-
-C           = gcc
-C_OPTIONS   = -Wall -O -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin 
+CPP = g++
+CPP_OPTIONS = -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector -fleading-underscore -m32 -fno-asynchronous-unwind-tables
 
 all: kernel.bin
 
 clean:
-	del *.o
-
+	rm -f *.o
 
 start.o: start.asm gdt_low.asm idt_low.asm irq_low.asm
 	nasm -f aout -o start.o start.asm
@@ -49,19 +45,22 @@ console.o: console.C console.H
 
 simple_timer.o: simple_timer.C simple_timer.H
 	$(CPP) $(CPP_OPTIONS) -c -o simple_timer.o simple_timer.C
-
 simple_disk.o: simple_disk.C simple_disk.H
 	$(CPP) $(CPP_OPTIONS) -c -o simple_disk.o simple_disk.C
+blocking_disk.o: blocking_disk.C blocking_disk.H
+	$(CPP) $(CPP_OPTIONS) -c -o blocking_disk.o blocking_disk.C
 
 # ==== MEMORY =====
 
-
-frame_pool.o: frame_pool.C frame_pool.H 
+frame_pool.o: frame_pool.C frame_pool.H
 	$(CPP) $(CPP_OPTIONS) -c -o frame_pool.o frame_pool.C
-
-mem_pool.o: mem_pool.C mem_pool.H 
+	
+mem_pool.o: mem_pool.C mem_pool.H
 	$(CPP) $(CPP_OPTIONS) -c -o mem_pool.o mem_pool.C
 
+file_system.o: file_system.C file_system.H
+	
+	$(CPP) $(CPP_OPTIONS) -c -o file_system.o file_system.C
 # ==== THREADS =====
 
 threads_low.o: threads_low.asm threads_low.H
@@ -70,13 +69,19 @@ threads_low.o: threads_low.asm threads_low.H
 thread.o: thread.C thread.H threads_low.H
 	$(CPP) $(CPP_OPTIONS) -c -o thread.o thread.C
 
-# ==== MAIN =====
 
-kernel.o: kernel.C console.H simple_timer.H
+scheduler.o: scheduler.C scheduler.H
+	$(CPP) $(CPP_OPTIONS) -c -o scheduler.o scheduler.C
+
+
+# ==== KERNEL MAIN FILE =====
+
+kernel.o: kernel.C console.H gdt.H irq.H exceptions.H interrupts.H simple_timer.H frame_pool.H mem_pool.H scheduler.H
 	$(CPP) $(CPP_OPTIONS) -c -o kernel.o kernel.C
 
 kernel.bin: start.o utils.o kernel.o assert.o console.o gdt.o idt.o irq.o machine.o exceptions.o interrupts.o \
-   simple_timer.o simple_disk.o frame_pool.o mem_pool.o threads_low.o thread.o
-	ld -T linker.ld -o kernel.bin start.o utils.o kernel.o assert.o console.o gdt.o idt.o \
-   exceptions.o irq.o machine.o interrupts.o simple_timer.o simple_disk.o frame_pool.o mem_pool.o threads_low.o thread.o
+   simple_timer.o simple_disk.o blocking_disk.o frame_pool.o mem_pool.o file_system.o threads_low.o thread.o scheduler.o
+	ld -m elf_i386 -T linker.ld -o kernel.bin start.o utils.o kernel.o assert.o console.o gdt.o idt.o\
+   exceptions.o irq.o machine.o interrupts.o simple_timer.o simple_disk.o blocking_disk.o frame_pool.o mem_pool.o file_system.o threads_low.o thread.o scheduler.o
+	
 	

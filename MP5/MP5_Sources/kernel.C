@@ -1,4 +1,4 @@
-/* 
+/*
     File: kernel.C
 
     Author: R. Bettati
@@ -20,10 +20,10 @@
 
 /* -- COMMENT/UNCOMMENT THE FOLLOWING LINE TO EXCLUDE/INCLUDE SCHEDULER CODE */
 
-//#define _USES_SCHEDULER_
-/* This macro is defined when we want to force the code below to use 
+#define _USES_SCHEDULER_
+/* This macro is defined when we want to force the code below to use
    a scheduler.
-   Otherwise, no scheduler is used, and the threads pass control to each 
+   Otherwise, no scheduler is used, and the threads pass control to each
    other in a co-routine fashion.
 */
 
@@ -33,13 +33,15 @@
    Leave the macro undefined if you don't want to exercise the disk code.
 */
 
-//#define _USES_FILESYSTEM_
+#define _USES_FILESYSTEM_
 /* This macro is defined when we want to exercise file-system code.
-   If defined, the system defines a file system, and Thread 3 issues 
+   If defined, the system defines a file system, and Thread 3 issues
    issues operations to it.
    Leave the macro undefined if you don't want to exercise file system code.
 */
 
+
+#define BUFFER_SIZE BLOCKSIZE-HEADER_SIZE
 /*--------------------------------------------------------------------------*/
 /* INCLUDES */
 /*--------------------------------------------------------------------------*/
@@ -49,7 +51,7 @@
 #include "gdt.H"
 #include "idt.H"             /* EXCEPTION MGMT.   */
 #include "irq.H"
-#include "exceptions.H"     
+#include "exceptions.H"
 #include "interrupts.H"
 
 #include "simple_timer.H"    /* TIMER MANAGEMENT  */
@@ -126,7 +128,7 @@ void pass_on_CPU(Thread * _to_thread) {
 
         /* We don't use a scheduler. Explicitely pass control to the next
            thread in a co-routine fashion. */
-	Thread::dispatch_to(_to_thread); 
+	Thread::dispatch_to(_to_thread);
 
 #else
 
@@ -134,7 +136,7 @@ void pass_on_CPU(Thread * _to_thread) {
            we pre-empt the current thread by putting it onto the ready
            queue and yielding the CPU. */
 
-        SYSTEM_SCHEDULER->resume(Thread::CurrentThread()); 
+        SYSTEM_SCHEDULER->resume(Thread::CurrentThread());
         SYSTEM_SCHEDULER->yield();
 #endif
 }
@@ -146,20 +148,44 @@ void pass_on_CPU(Thread * _to_thread) {
 
 #ifdef _USES_FILESYSTEM_
 
-int rand() {
-  /* Rather silly random number generator. */
-
-  unsigned long dummy_sec;
-  int           dummy_tic;
-
-  SimpleTimer::current(dummy_sec, dummy_tic);
-
-  return dummy_tic;
-}
 
 void exercise_file_system(FileSystem * _file_system, SimpleDisk * _simple_disk) {
-  /* NOTHING FOR NOW. 
+  /* NOTHING FOR NOW.
      FEEL FREE TO ADD YOUR OWN CODE. */
+     _file_system->Format(_simple_disk,512);
+     _file_system->Mount(_simple_disk);
+
+    File* file;
+     while(1){
+
+     _file_system->CreateFile(1);
+//     _file_system->DeleteFile(1);
+//     if (_file_system->LookupFile(1, file)==TRUE)//test delete
+//        assert(FALSE);
+//     _file_system->CreateFile(1);
+     if (_file_system->LookupFile(1, file)==FALSE)//test lookup
+        assert(FALSE);
+
+    char buffer[BUFFER_SIZE];
+    char buffer2[BUFFER_SIZE];
+    char *mystr="\nHELLO MY NAME IS\n";
+    char *dummy="DUMMY STRING\n";
+
+    memcpy(buffer,mystr,BUFFER_SIZE);
+    memcpy(buffer2,dummy,BUFFER_SIZE);
+    file->Write(BUFFER_SIZE,buffer2);
+
+    file->Reset();
+    file->Read(BUFFER_SIZE,buffer2);
+    Console::puts(buffer);
+    Console::puts(buffer2);
+    if (buffer[0]!=buffer2[0])
+        assert(FALSE);
+    assert(FALSE);
+     SYSTEM_SCHEDULER->resume(Thread::CurrentThread());
+     SYSTEM_SCHEDULER->yield();
+
+}
 }
 
 #endif
@@ -186,7 +212,8 @@ void fun1() {
 	  Console::puts("FUN 1: TICK ["); Console::puti(i); Console::puts("]\n");
        }
 
-       pass_on_CPU(thread2);
+        SYSTEM_SCHEDULER->resume(Thread::CurrentThread());
+        SYSTEM_SCHEDULER->yield();
     }
 }
 
@@ -211,7 +238,7 @@ void fun2() {
        /* -- Read */
        Console::puts("Reading a block from disk...\n");
        /* UNCOMMENT THE FOLLOWING LINE IN FINAL VERSION. */
-       SYSTEM_DISK->read(read_block, buf);
+       //SYSTEM_DISK->read(read_block, buf);
 
        /* -- Display */
        int i;
@@ -226,7 +253,7 @@ void fun2() {
 
        Console::puts("Writing a block to disk...\n");
        /* UNCOMMENT THE FOLLOWING LINE IN FINAL VERSION. */
-       SYSTEM_DISK->write(write_block, buf); 
+       SYSTEM_DISK->write(write_block, buf);
 #endif
 
        /* -- Move to next block */
@@ -237,7 +264,7 @@ void fun2() {
        for (int i = 0; i < 10; i++) {
 	  Console::puts("FUN 2: TICK ["); Console::puti(i); Console::puts("]\n");
        }
-     
+
 #endif
 
        /* -- Give up the CPU */
@@ -251,8 +278,7 @@ void fun3() {
     Console::puts("FUN 3 INVOKED!\n");
 
 #ifdef _USES_FILESYSTEM_
-
-    exercise_file_system(FILE_SYSTEM);
+    exercise_file_system(FILE_SYSTEM, SYSTEM_DISK);
 
 #else
 
@@ -263,10 +289,12 @@ void fun3() {
        for (int i = 0; i < 10; i++) {
 	  Console::puts("FUN 3: TICK ["); Console::puti(i); Console::puts("]\n");
        }
-    
+
 #endif
        pass_on_CPU(thread4);
+    #ifndef _USES_FILESYSTEM_
     }
+    #endif // _USES_FILESYSTEM_
 }
 
 void fun4() {
@@ -349,14 +377,14 @@ int main() {
     /* ---- Initialize a frame pool; details are in its implementation */
     FramePool system_frame_pool;
     SYSTEM_FRAME_POOL = &system_frame_pool;
-   
+
     /* ---- Create a memory pool of 256 frames. */
     MemPool memory_pool(SYSTEM_FRAME_POOL, 256);
     MEMORY_POOL = &memory_pool;
 
     /* -- INITIALIZE THE TIMER (we use a very simple timer).-- */
 
-    /* Question: Why do we want a timer? We have it to make sure that 
+    /* Question: Why do we want a timer? We have it to make sure that
                  we enable interrupts correctly. If we forget to do it,
                  the timer "dies". */
 
@@ -367,12 +395,12 @@ int main() {
 #ifdef _USES_SCHEDULER_
 
     /* -- SCHEDULER -- IF YOU HAVE ONE -- */
-  
-    Scheduler system_scheduler = Scheduler();
+
+    Scheduler system_scheduler;
     SYSTEM_SCHEDULER = &system_scheduler;
 
 #endif
-   
+
 #ifdef _USES_DISK_
 
     /* -- DISK DEVICE -- IF YOU HAVE ONE -- */
@@ -386,16 +414,16 @@ int main() {
 
      /* -- FILE SYSTEM  -- IF YOU HAVE ONE -- */
 
-     FileSystem file_system = FileSystem();
+     FileSystem file_system= FileSystem();
      FILE_SYSTEM = &file_system;
 
 #endif
 
 
-    /* NOTE: The timer chip starts periodically firing as 
+    /* NOTE: The timer chip starts periodically firing as
              soon as we enable interrupts.
-             It is important to install a timer handler, as we 
-             would get a lot of uncaptured interrupts otherwise. */  
+             It is important to install a timer handler, as we
+             would get a lot of uncaptured interrupts otherwise. */
 
     /* -- ENABLE INTERRUPTS -- */
 
@@ -443,7 +471,7 @@ int main() {
     Thread::dispatch_to(thread1);
 
     /* -- AND ALL THE REST SHOULD FOLLOW ... */
- 
+
     assert(FALSE); /* WE SHOULD NEVER REACH THIS POINT. */
 
     /* -- WE DO THE FOLLOWING TO KEEP THE COMPILER HAPPY. */
