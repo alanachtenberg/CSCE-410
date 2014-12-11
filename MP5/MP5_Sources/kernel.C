@@ -40,8 +40,8 @@
    Leave the macro undefined if you don't want to exercise file system code.
 */
 
-
 #define BUFFER_SIZE BLOCKSIZE-HEADER_SIZE
+
 /*--------------------------------------------------------------------------*/
 /* INCLUDES */
 /*--------------------------------------------------------------------------*/
@@ -66,12 +66,12 @@
 #endif
 
 #ifdef _USES_DISK_
-#include "simple_disk.H"
+#include "blocking_disk.H"
 #endif
 
-#ifdef _USES_FILESYSTEM_
+//#ifdef _USES_FILESYSTEM_ to satisfy compiler
 #include "file_system.H"
-#endif
+//#endif
 
 /*--------------------------------------------------------------------------*/
 /* MEMORY MANAGEMENT */
@@ -101,7 +101,7 @@ Scheduler * SYSTEM_SCHEDULER;
 #ifdef _USES_DISK_
 
 /* -- A POINTER TO THE SYSTEM DISK */
-SimpleDisk * SYSTEM_DISK;
+BlockingDisk * SYSTEM_DISK;
 
 #define SYSTEM_DISK_SIZE 10485760
 
@@ -111,12 +111,12 @@ SimpleDisk * SYSTEM_DISK;
 /* FILE SYSTEM */
 /*--------------------------------------------------------------------------*/
 
-#ifdef _USES_FILESYSTEM_
+//#ifdef _USES_FILESYSTEM_, to accomodate make file
 
 /* -- A POINTER TO THE SYSTEM FILE SYSTEM */
 FileSystem * FILE_SYSTEM;
 
-#endif
+//#endif
 
 /*--------------------------------------------------------------------------*/
 /* JUST AN AUXILIARY FUNCTION */
@@ -149,43 +149,10 @@ void pass_on_CPU(Thread * _to_thread) {
 #ifdef _USES_FILESYSTEM_
 
 
-void exercise_file_system(FileSystem * _file_system, SimpleDisk * _simple_disk) {
+void exercise_file_system(FileSystem * _file_system, BlockingDisk * _blocking_disk) {
   /* NOTHING FOR NOW.
      FEEL FREE TO ADD YOUR OWN CODE. */
-     _file_system->Format(_simple_disk,512);
-     _file_system->Mount(_simple_disk);
 
-    File* file;
-     while(1){
-
-     _file_system->CreateFile(1);
-//     _file_system->DeleteFile(1);
-//     if (_file_system->LookupFile(1, file)==TRUE)//test delete
-//        assert(FALSE);
-//     _file_system->CreateFile(1);
-     if (_file_system->LookupFile(1, file)==FALSE)//test lookup
-        assert(FALSE);
-
-    char buffer[BUFFER_SIZE];
-    char buffer2[BUFFER_SIZE];
-    char *mystr="\nHELLO MY NAME IS\n";
-    char *dummy="DUMMY STRING\n";
-
-    memcpy(buffer,mystr,BUFFER_SIZE);
-    memcpy(buffer2,dummy,BUFFER_SIZE);
-    file->Write(BUFFER_SIZE,buffer2);
-
-    file->Reset();
-    file->Read(BUFFER_SIZE,buffer2);
-    Console::puts(buffer);
-    Console::puts(buffer2);
-    if (buffer[0]!=buffer2[0])
-        assert(FALSE);
-    assert(FALSE);
-     SYSTEM_SCHEDULER->resume(Thread::CurrentThread());
-     SYSTEM_SCHEDULER->yield();
-
-}
 }
 
 #endif
@@ -200,7 +167,7 @@ Thread * thread3;
 Thread * thread4;
 
 void fun1() {
-    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()); Console::puts("\n");
+    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()+1); Console::puts("\n");
 
     Console::puts("FUN 1 INVOKED!\n");
 
@@ -211,16 +178,14 @@ void fun1() {
        for (int i = 0; i < 10; i++) {
 	  Console::puts("FUN 1: TICK ["); Console::puti(i); Console::puts("]\n");
        }
-
-        SYSTEM_SCHEDULER->resume(Thread::CurrentThread());
-        SYSTEM_SCHEDULER->yield();
+    pass_on_CPU(thread2);
     }
 }
 
 
 
 void fun2() {
-    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()); Console::puts("\n");
+    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()+1); Console::puts("\n");
 
     Console::puts("FUN 2 INVOKED!\n");
 
@@ -229,7 +194,6 @@ void fun2() {
     int  read_block  = 1;
     int  write_block = 0;
 #endif
-
     for(int j = 0;; j++) {
 
        Console::puts("FUN 2 IN ITERATION["); Console::puti(j); Console::puts("]\n");
@@ -241,9 +205,8 @@ void fun2() {
        //SYSTEM_DISK->read(read_block, buf);
 
        /* -- Display */
-       int i;
-       for (i = 0; i < 512; i++) {
-	  Console::putch(buf[i]);
+       for (int i = 0; i < 512; i++) {
+            Console::putch(buf[i]);
        }
 
 #ifndef _USES_FILESYSTEM_
@@ -268,44 +231,80 @@ void fun2() {
 #endif
 
        /* -- Give up the CPU */
-       pass_on_CPU(thread3);
+    pass_on_CPU(thread3);
     }
+
 }
 
 void fun3() {
-    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()); Console::puts("\n");
+    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()+1); Console::puts("\n");
 
     Console::puts("FUN 3 INVOKED!\n");
 
 #ifdef _USES_FILESYSTEM_
-    exercise_file_system(FILE_SYSTEM, SYSTEM_DISK);
+    for(int j = 0;; j++) {
+    //exercise_file_system(FILE_SYSTEM, SYSTEM_DISK);
+    FileSystem* _file_system=FILE_SYSTEM;
+    BlockingDisk* _blocking_disk=SYSTEM_DISK;
+     _file_system->Format(_blocking_disk,512);
+     _file_system->Mount(_blocking_disk);
 
-#else
+    File* file;
 
-     for(int j = 0;; j++) {
+     _file_system->CreateFile(j);
+     _file_system->DeleteFile(j);
+     if (_file_system->LookupFile(j, file)==TRUE)//test delete
+        assert(FALSE);
+     _file_system->CreateFile(j);
+     if (_file_system->LookupFile(j, file)==FALSE)//test lookup
+        assert(FALSE);
 
+    char buffer[BUFFER_SIZE*2];
+    char buffer2[BUFFER_SIZE*2];
+    char *str1="BUFFER 1 STRING TEST\n";
+    char *str2="JUNK BUFFER\n";
+    Console::puts("BUFFER CONTENT:\n");
+    memcpy(buffer,str1,BUFFER_SIZE*2);
+    memcpy(buffer2,str2,BUFFER_SIZE*2);
+    Console::puts(buffer);
+    Console::puts(buffer2);
+
+
+    file->Write(BUFFER_SIZE,buffer);
+    Console::puts("Writing BUFFER 1 to file\n");
+    file->Reset();
+    file->Read(BUFFER_SIZE,buffer2);
+    Console::puts("Reading from file into BUFFER 2\n");
+    Console::puts("BUFFER CONTENT:\n");
+    Console::puts(buffer);
+    Console::puts(buffer2);
+    if (buffer[0]!=buffer2[0])
+        assert(FALSE);
+
+         Console::puts("END OF TEST\n");
+     for(;;);
+     #else
+       for(int j = 0;; j++) {
        Console::puts("FUN 3 IN BURST["); Console::puti(j); Console::puts("]\n");
 
        for (int i = 0; i < 10; i++) {
 	  Console::puts("FUN 3: TICK ["); Console::puti(i); Console::puts("]\n");
        }
+    pass_on_CPU(thread4);
+    #endif
 
-#endif
-       pass_on_CPU(thread4);
-    #ifndef _USES_FILESYSTEM_
     }
-    #endif // _USES_FILESYSTEM_
 }
 
 void fun4() {
-    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()); Console::puts("\n");
+    Console::puts("THREAD: "); Console::puti(Thread::CurrentThread()->ThreadId()+1); Console::puts("\n");
 
     for(int j = 0;; j++) {
 
        Console::puts("FUN 4 IN BURST["); Console::puti(j); Console::puts("]\n");
 
        for (int i = 0; i < 10; i++) {
-	  Console::puts("FUN 4: TICK ["); Console::puti(i); Console::puts("]\n");
+        Console::puts("FUN 4: TICK ["); Console::puti(i); Console::puts("]\n");
        }
 
        pass_on_CPU(thread1);
@@ -405,19 +404,19 @@ int main() {
 
     /* -- DISK DEVICE -- IF YOU HAVE ONE -- */
 
-    SimpleDisk system_disk = SimpleDisk(MASTER, SYSTEM_DISK_SIZE);
+    BlockingDisk system_disk = BlockingDisk(MASTER, SYSTEM_DISK_SIZE);
     SYSTEM_DISK = &system_disk;
 
 #endif
 
-#ifdef _USES_FILESYSTEM_
+//#ifdef _USES_FILESYSTEM_
 
      /* -- FILE SYSTEM  -- IF YOU HAVE ONE -- */
 
      FileSystem file_system= FileSystem();
      FILE_SYSTEM = &file_system;
 
-#endif
+//#endif
 
 
     /* NOTE: The timer chip starts periodically firing as
@@ -441,12 +440,12 @@ int main() {
     Console::puts("DONE\n");
 
     Console::puts("CREATING THREAD 2...");
-    char * stack2 = new char[1024];
+    char * stack2 = new char[1024*2];//allow for testing file system with larger buffers
     thread2 = new Thread(fun2, stack2, 1024);
     Console::puts("DONE\n");
 
     Console::puts("CREATING THREAD 3...");
-    char * stack3 = new char[1024];
+    char * stack3 = new char[1024*10];
     thread3 = new Thread(fun3, stack3, 1024);
     Console::puts("DONE\n");
 
@@ -458,7 +457,6 @@ int main() {
 #ifdef _USES_SCHEDULER_
 
     /* WE ADD thread2 - thread4 TO THE READY QUEUE OF THE SCHEDULER. */
-
     SYSTEM_SCHEDULER->add(thread2);
     SYSTEM_SCHEDULER->add(thread3);
     SYSTEM_SCHEDULER->add(thread4);

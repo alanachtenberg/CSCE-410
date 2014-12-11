@@ -20,7 +20,7 @@
             cur_position=0;
             file_size=0;
             block_nums=NULL;
-            Console::puts("Created empty file\n");
+            //Console::puts("Created empty file\n");
         }
         else
             Console::puts("ERR cannot create file\n");
@@ -33,35 +33,55 @@
         while (count>0){
             if (EoF() && count>0)
                 return 0;//error
-            Console::puts("bloc_num[cur_block] ");Console::putui(block_nums[cur_block]);Console::puts("\n");
-            Console::puts("Current Position ");Console::putui(cur_position);Console::puts("\n");
+//            Console::puts("bloc_num[cur_block] ");Console::putui(block_nums[cur_block]);Console::puts("\n");
+//            Console::puts("Current Position ");Console::putui(cur_position);Console::puts("\n");
             FILE_SYSTEM->disk->read(block_nums[cur_block],disk_buff);//read block from file
             for (cur_position;cur_position<BLOCKSIZE-HEADER_SIZE;++cur_position){//cur position ranges from 0-511 in increments of 8
-                if (count==0)//dont read more than were supposed to
+                if (count==1)//dont read more than were supposed to
                     break;
+//                Console::puts("bloc_num[cur_block] ");Console::putui(block_nums[cur_block]);Console::puts("\n");
+//                Console::puts("Current Position ");Console::putui(cur_position);Console::puts("\n");
+//                Console::puts("Char Copied ");Console::putui(*(disk_buff+HEADER_SIZE+cur_position));Console::puts("\n");
+
                 memcpy(_buf,disk_buff+HEADER_SIZE+cur_position,1);//copy from file  buffer to user buffer
-                --count;
-            }
+                ++_buf;//increment buffer pointer
+                count-=1;
+
             if (cur_position==(BLOCKSIZE-HEADER_SIZE)){//if statement accounts for case where we read less than a block
-                Console::puts("finsihed with old block, reading new block\n");
+                //Console::puts("finsihed with old block, reading new block\n");
                 cur_position=0;
                 ++cur_block;
             }
         }
         return (count-_n)*-1;//returns the total amount read
     }
+}
     /* Read _n characters from the file starting at the
        current location and copy them in _buf.
        Return the number of characters read. */
-
+    void putUIntData(char* buffer, unsigned int size){
+        unsigned int* ptr=(unsigned int*)buffer;
+        unsigned int i=0;
+        for (i=0;i<size/sizeof(unsigned int);++i)
+            Console::putui(ptr[i]);
+    }
     unsigned int File::Write(unsigned int _n, char * _buf){
         unsigned int count=_n;//initialize count
         while (BLOCKSIZE-HEADER_SIZE<=count){
-            memcpy(disk_buff+HEADER_SIZE,_buf,BLOCKSIZE-HEADER_SIZE);//copy from user buffer to file buffer
+
+//            putUIntData(disk_buff,10*sizeof(unsigned int));
+//            Console::puts("\n DATA We want to write\n");
             if (EoF())//if we are at end of file get a new block
                 GetBlock();
+            //MAKE SURE TO COPY BUFFER AFTER GETBLOCK, getblock uses disk_buff
+            memcpy((void*)(disk_buff+HEADER_SIZE),_buf,BLOCKSIZE-HEADER_SIZE);//copy from user buffer to file buffer
             FILE_SYSTEM->disk->write(block_nums[cur_block],disk_buff);
-
+//            putUIntData(disk_buff,10*sizeof(unsigned int));
+//            Console::puts("\n DATA WROTE\n");-
+//            memset(disk_buff,0,BLOCKSIZE);//clear buffer
+//            FILE_SYSTEM->disk->read(block_nums[cur_block],disk_buff);
+//            putUIntData(disk_buff,10*sizeof(unsigned int));
+//            Console::puts("\n DATA READ\n");
             count-=(BLOCKSIZE-HEADER_SIZE);
         }
         return (count-_n)*-1;//returns the total amount read
@@ -74,17 +94,17 @@
     void File::Reset(){
             cur_position=0;
             cur_block=0;
-            Console::puts("reseting block and position ");Console::putui(cur_block);Console::putui(cur_position);
-            Console::puts("\n");
+//            Console::puts("reseting block and position ");Console::putui(cur_block);Console::putui(cur_position);
+//            Console::puts("\n");
     }
     /* Set the 'current position' at the beginning of the file. */
 
     void File::Rewrite(){
         cur_block=0;
-        //while(cur_block<file_size){//release memory
-          //  FILE_SYSTEM->DeallocateBlock(block_nums[cur_block]);
-           // ++cur_block;
-        //}
+        while(cur_block<file_size){//release memory
+            FILE_SYSTEM->DeallocateBlock(block_nums[cur_block]);
+            ++cur_block;
+        }
         cur_block=0;
         cur_position=0;
         block_nums=NULL;
@@ -96,11 +116,11 @@
 
     BOOLEAN File::EoF(){
         if (block_nums==NULL){
-            Console::puts("EOF REACHED\n");
+            //Console::puts("EOF REACHED\n");
             return TRUE;
             }
         if (cur_block==file_size-1 && cur_position==BLOCKSIZE-HEADER_SIZE-1 ){
-            Console::puts("EOF REACHED\n");
+            //Console::puts("EOF REACHED\n");
             return TRUE;
             }
         else
@@ -109,7 +129,7 @@
     /* Is the current location for the file at the end of the file? */
     BOOLEAN File::GetBlock(){
         unsigned int new_block_num=FILE_SYSTEM->AllocateBlock(0);
-        Console::puts("New block: ");Console::putui(new_block_num);Console::puts("\n");
+        //Console::puts("New block: ");Console::putui(new_block_num);Console::puts("\n");
         unsigned int* new_num_array= (unsigned int*)new unsigned int[file_size+1];
         for (unsigned int i=0;i<file_size;++i)//copy old list
             new_num_array[i]=block_nums[i];
@@ -120,12 +140,6 @@
         ++file_size;//increment file size
         delete block_nums; //delete old array
         block_nums=new_num_array;//set pointer to new array
-//        Console::puts("bloc_num[0] ");Console::putui(block_nums[0]);Console::puts("\n");
-//        Console::puts("bloc_num[1] ");Console::putui(block_nums[1]);Console::puts("\n");
-//        Console::puts("bloc_num[2] ");Console::putui(block_nums[2]);Console::puts("\n");
-//        Console::puts("Current Block ");Console::putui(cur_block);Console::puts("\n");
-//        Console::puts("NUMBER OF BLOCKS ");Console::putui(file_size);Console::puts("\n");
-
         return TRUE;
     }
     /* Allocates a block from global file system and updates blocknum array */
@@ -134,7 +148,7 @@
         block_num=0;
         num_files=0;
         files=NULL;
-        memset(disk_buff,0,BLOCKSIZE);
+        memset(disk_buff,0,BLOCKSIZE);//clear buffer
 
    }
    /* Just initializes local data structures. Does not connect to disk yet. */
@@ -149,7 +163,8 @@
             disk->read(block->data[i],disk_buff);//puts file inode in buffer
             newFile->file_size=block->size;
             newFile->file_id=block->id;
-            for (unsigned int j=0;j<newFile->file_size;++j){
+            unsigned int k=0;
+            for ( k=0;k<newFile->file_size;++k){
                // newFile->GetBlock();//allocates a block
                // newFile->block_nums[j]=inode->blocks[j];//sets block number
             }
@@ -168,10 +183,26 @@
     //meaning our system will theoretically support up to 2^32 files but realistically we will long run out of memory before then
     //first 4 bytes of the first block is the number of files block
     disk=_disk;
-    memset(disk_buff,0,BLOCKSIZE);
-    block->availability=USED;//set block to use
-    block->size=0;
-    _disk->write(0,disk_buff);//write all 0 to block this will cause first 4 bytes to be empty which is interpereted as 0 files on disk
+    /*testing FILE_SYSTEM->disk->read(50,disk_buff);
+            putUIntData(disk_buff,10*sizeof(unsigned int));
+            Console::puts("\nRead initial\n");
+    memset(disk_buff,'b',15);
+      FILE_SYSTEM->disk->write(50,disk_buff);
+            putUIntData(disk_buff+HEADER_SIZE,10*sizeof(unsigned int));
+            Console::puts("\nWrote\n");
+    memset(disk_buff,0x0,BLOCKSIZE);
+    FILE_SYSTEM->disk->read(50,disk_buff);
+            putUIntData(disk_buff+HEADER_SIZE,10*sizeof(unsigned int));
+            Console::puts("\nAFTER WRITE\n");
+    assert(false); */
+    memset(disk_buff,0,BLOCKSIZE);//set entire disk to 0, automatically free memory
+    Console::puts("Formatting Disk, may take awhile\n");
+    for (int i=0;i<SYSTEM_BLOCKS;++i)
+        _disk->write(i,disk_buff);
+    block->availability=USED;//set block to used
+    block->size=0;//write to  size block this will cause first 4 bytes to be empty which is interpereted as 0 files on disk
+    _disk->write(0,disk_buff);//initializes master block
+    Console::puts("Format of empty file system complete\n");
    }
    /* Wipes any file system from the given disk and installs a new, empty, file
       system that supports up to _size Byte. */
